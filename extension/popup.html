@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScanSafe</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z" fill="url(#logoGrad)" />
+          <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="logoGrad" x1="3" y1="2" x2="21" y2="23" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#3b82f6"/>
+              <stop offset="1" stop-color="#10b981"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="logo-text">ScanSafe</span>
+      </div>
+      <div id="current-site-pill" class="site-pill">—</div>
+    </header>
+
+    <!-- Search bar -->
+    <div class="search-wrap">
+      <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+        <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <input
+        id="url-input"
+        class="search-input"
+        type="text"
+        placeholder="Enter a website URL…"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button id="check-btn" class="check-btn">Check</button>
+    </div>
+
+    <!-- States -->
+    <div id="state-idle" class="state">
+      <div class="idle-content">
+        <div class="idle-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z" stroke="#3b82f6" stroke-width="1.5" fill="none"/>
+          </svg>
+        </div>
+        <p class="idle-title">Verify any website instantly</p>
+        <p class="idle-sub">Enter a URL above or click "Check This Site" to scan the current page.</p>
+        <button id="check-current-btn" class="btn-primary full-width">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 8v4l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Check This Site
+        </button>
+      </div>
+
+      <!-- Known sites quick-check -->
+      <div class="quick-section">
+        <p class="quick-label">Quick check</p>
+        <div class="quick-chips">
+          <button class="chip" data-url="flipkart.com">flipkart.com</button>
+          <button class="chip" data-url="amazon.in">amazon.in</button>
+          <button class="chip" data-url="myntra.com">myntra.com</button>
+          <button class="chip" data-url="shopclues.com">shopclues.com</button>
+          <button class="chip chip-danger" data-url="fake-flipkart.com">fake-flipkart.com</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="state-loading" class="state hidden">
+      <div class="loading-wrap">
+        <div class="spinner-ring"></div>
+        <p class="loading-title">Verifying…</p>
+        <p id="loading-domain" class="loading-sub">Checking BIS &amp; FSSAI databases</p>
+      </div>
+    </div>
+
+    <div id="state-result" class="state hidden">
+      <!-- Score row -->
+      <div class="result-header">
+        <div class="score-wrap">
+          <svg class="score-ring" viewBox="0 0 80 80" width="80" height="80">
+            <circle cx="40" cy="40" r="34" fill="none" stroke-width="7" class="ring-track"/>
+            <circle id="ring-progress" cx="40" cy="40" r="34" fill="none" stroke-width="7"
+              stroke-linecap="round" class="ring-fill"
+              style="stroke-dasharray:213.6; stroke-dashoffset:213.6; transform:rotate(-90deg); transform-origin:center"/>
+          </svg>
+          <div class="score-center">
+            <span id="score-number" class="score-num">—</span>
+          </div>
+        </div>
+        <div class="result-meta">
+          <div id="trust-badge" class="trust-badge">—</div>
+          <p id="result-domain" class="result-domain">—</p>
+          <p id="result-company" class="result-company">—</p>
+          <p id="result-category" class="result-category">—</p>
+        </div>
+      </div>
+
+      <!-- Registrations -->
+      <div class="section-label">Registrations</div>
+      <div id="reg-list" class="reg-list"></div>
+
+      <!-- Alerts -->
+      <div id="alerts-wrap" class="hidden">
+        <div class="section-label">Alerts</div>
+        <div id="alert-list" class="alert-list"></div>
+      </div>
+
+      <!-- FIR button -->
+      <div id="fir-wrap" class="hidden">
+        <a id="fir-btn" href="https://cybercrime.gov.in" target="_blank" class="btn-danger full-width">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          File Complaint / FIR
+        </a>
+      </div>
+
+      <button id="back-btn" class="btn-ghost full-width mt-2">← Check another site</button>
+    </div>
+
+    <div id="state-unknown" class="state hidden">
+      <div class="unknown-wrap">
+        <div class="unknown-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="#64748b" stroke-width="1.5"/>
+            <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01" stroke="#64748b" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <p class="unknown-title">Not in our database</p>
+        <p id="unknown-domain" class="unknown-sub">—</p>
+        <p class="unknown-hint">We don't have records for this site yet. Proceed with caution on unfamiliar websites.</p>
+        <a href="https://cybercrime.gov.in" target="_blank" class="btn-ghost full-width mt-2">
+          Report this site
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="mock-db.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
