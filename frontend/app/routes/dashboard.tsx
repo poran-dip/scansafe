@@ -10,6 +10,7 @@ import {
   FileWarning,
 } from "lucide-react";
 import { useNavigate, Link } from "react-router";
+import Navbar from "../components/Navbar";
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -113,6 +114,7 @@ export default function Dashboard() {
 
   return (
     <div className="relative min-h-screen bg-slate-950 text-white overflow-hidden">
+      <Navbar />
 
       {/* Grid background */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.04)_1px,transparent_1px)] bg-size-[64px_64px] pointer-events-none" />
@@ -121,7 +123,7 @@ export default function Dashboard() {
       <div className="absolute top-32 left-1/4 w-96 h-96 bg-blue-600/8 blur-3xl rounded-full pointer-events-none" />
       <div className="absolute bottom-32 right-1/4 w-80 h-80 bg-emerald-600/8 blur-3xl rounded-full pointer-events-none" />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 py-14 space-y-8">
+      <div className="relative z-10 max-w-6xl mx-auto px-6 pt-24 pb-14 space-y-8">
 
         {/* ── Header ── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -133,15 +135,6 @@ export default function Dashboard() {
             <h1 className="text-3xl font-black tracking-tight text-white">Overview</h1>
             <p className="text-slate-400 text-sm mt-0.5">Monitor product safety and authenticity checks</p>
           </div>
-
-          <button
-            onClick={() => navigate("/check")}
-            className="group self-start sm:self-auto flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5"
-          >
-            <ScanLine className="w-4 h-4" />
-            New Scan
-            <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
-          </button>
         </div>
 
         {/* ── Stats ── */}

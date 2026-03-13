@@ -1,5 +1,5 @@
-import { CheckCircle, AlertCircle, Clock, Download, Printer } from "lucide-react";
-import type { FIR } from "~/types/trust";
+import { CheckCircle, AlertCircle, Clock, Download, Printer, FileWarning } from "lucide-react";
+import type { FIR } from "../../types/trust";
 
 interface FIRDisplayProps {
   fir: FIR;
@@ -8,11 +8,11 @@ interface FIRDisplayProps {
   isSubmitting?: boolean;
 }
 
-const severityColors = {
-  low: { bg: "bg-blue-50", border: "border-blue-300", text: "text-blue-800", label: "Low" },
-  medium: { bg: "bg-yellow-50", border: "border-yellow-300", text: "text-yellow-800", label: "Medium" },
-  high: { bg: "bg-orange-50", border: "border-orange-300", text: "text-orange-800", label: "High" },
-  critical: { bg: "bg-red-50", border: "border-red-300", text: "text-red-800", label: "Critical" },
+const severityConfig = {
+  low:      { bg: "bg-blue-500/10",   border: "border-blue-500/20",   text: "text-blue-300",   label: "Low"      },
+  medium:   { bg: "bg-amber-500/10",  border: "border-amber-500/20",  text: "text-amber-300",  label: "Medium"   },
+  high:     { bg: "bg-orange-500/10", border: "border-orange-500/20", text: "text-orange-300", label: "High"     },
+  critical: { bg: "bg-red-500/10",    border: "border-red-500/20",    text: "text-red-300",    label: "Critical" },
 };
 
 const incidentTypeLabels: Record<string, string> = {
@@ -24,175 +24,140 @@ const incidentTypeLabels: Record<string, string> = {
   product_quality: "Product Quality Issue",
 };
 
-export default function FIRDisplay({ fir, onFileFIR, onCancel, isSubmitting = false }: FIRDisplayProps) {
-  const severityStyle = severityColors[fir.severity];
+interface FieldRowProps { label: string; value: React.ReactNode; mono?: boolean; }
+function FieldRow({ label, value, mono }: FieldRowProps) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">{label}</p>
+      <p className={`text-sm text-slate-200 ${mono ? "font-mono" : ""}`}>{value}</p>
+    </div>
+  );
+}
 
-  const handlePrint = () => {
-    window.print();
-  };
+export default function FIRDisplay({ fir, onFileFIR, onCancel, isSubmitting = false }: FIRDisplayProps) {
+  const sev = severityConfig[fir.severity];
 
   const handleDownload = () => {
-    const content = `
-FIR - FIRST INFORMATION REPORT
-════════════════════════════════════════
-FIR ID: ${fir.id}
-Date: ${fir.incidentDate}
-Severity: ${severityStyle.label}
-
-COMPLAINANT DETAILS:
-Name: ${fir.complainantName}
-Phone: ${fir.complainantPhone}
-
-INCIDENT DETAILS:
-Type: ${incidentTypeLabels[fir.incidentType] || fir.incidentType}
-${fir.involvedWebsite ? `Website: ${fir.involvedWebsite}\n` : ""}
-Description:
-${fir.incidentDescription}
-
-════════════════════════════════════════
-Status: ${fir.status}
-Generated: ${fir.createdAt}
-    `;
-    const blob = new Blob([content], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `FIR-${fir.id}.txt`;
+    const content = `FIR — FIRST INFORMATION REPORT\n${"═".repeat(40)}\nFIR ID: ${fir.id}\nDate: ${fir.incidentDate}\nSeverity: ${sev.label}\n\nCOMPLAINANT DETAILS:\nName: ${fir.complainantName}\nPhone: ${fir.complainantPhone}\n\nINCIDENT DETAILS:\nType: ${incidentTypeLabels[fir.incidentType] || fir.incidentType}\n${fir.involvedWebsite ? `Website: ${fir.involvedWebsite}\n` : ""}Description:\n${fir.incidentDescription}\n\n${"═".repeat(40)}\nStatus: ${fir.status}\nGenerated: ${fir.createdAt}`;
+    const a = Object.assign(document.createElement("a"), {
+      href: URL.createObjectURL(new Blob([content], { type: "text/plain" })),
+      download: `FIR-${fir.id}.txt`,
+    });
     a.click();
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg border border-gray-200">
+    <div className="w-full max-w-3xl mx-auto bg-slate-900/60 border border-slate-700/50 rounded-2xl overflow-hidden">
+
       {/* Header */}
-      <div className="mb-6 border-b border-gray-200 pb-4">
-        <div className="flex items-start justify-between">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900">📋 FIR Preview</h2>
-            <p className="text-sm text-gray-500 mt-1">Review your complaint before filing</p>
+      <div className="flex items-start justify-between px-6 py-5 border-b border-slate-700/40">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center">
+            <FileWarning className="w-5 h-5 text-blue-400" />
           </div>
-          <div className={`px-4 py-2 rounded-full border-2 font-semibold ${severityStyle.bg} ${severityStyle.border} ${severityStyle.text}`}>
-            {severityStyle.label} Severity
+          <div>
+            <h2 className="text-base font-semibold text-white">FIR Preview</h2>
+            <p className="text-xs text-slate-500">Review carefully before filing</p>
           </div>
         </div>
+        <span className={`text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full border ${sev.bg} ${sev.border} ${sev.text}`}>
+          {sev.label} Severity
+        </span>
       </div>
 
-      {/* FIR Content */}
-      <div className="space-y-6 mb-8">
-        {/* FIR ID & Date */}
+      <div className="p-6 space-y-5">
+
+        {/* ID + Date */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="p-4 bg-gray-50 rounded-lg">
-            <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">FIR ID</p>
-            <p className="text-lg font-mono text-gray-900 mt-1">{fir.id}</p>
+          <div className="bg-slate-800/50 border border-slate-700/40 rounded-xl p-4">
+            <FieldRow label="FIR ID" value={fir.id} mono />
           </div>
-          <div className="p-4 bg-gray-50 rounded-lg">
-            <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Incident Date</p>
-            <p className="text-lg text-gray-900 mt-1">{fir.incidentDate}</p>
+          <div className="bg-slate-800/50 border border-slate-700/40 rounded-xl p-4">
+            <FieldRow label="Incident Date" value={fir.incidentDate} />
           </div>
         </div>
 
-        {/* Complainant Details */}
-        <div className="border border-gray-200 rounded-lg p-4 bg-blue-50">
-          <h3 className="text-sm font-bold text-gray-800 uppercase mb-3 flex items-center gap-2">
-            <CheckCircle size={18} className="text-blue-600" />
-            Complainant Information
-          </h3>
-          <div className="space-y-2">
-            <p className="text-gray-800">
-              <span className="font-semibold">Name:</span> {fir.complainantName}
-            </p>
-            <p className="text-gray-800">
-              <span className="font-semibold">Phone:</span> {fir.complainantPhone}
-            </p>
+        {/* Complainant */}
+        <div className="bg-blue-500/8 border border-blue-500/20 rounded-xl p-4 space-y-3">
+          <div className="flex items-center gap-2 mb-1">
+            <CheckCircle className="w-4 h-4 text-blue-400" />
+            <p className="text-xs font-semibold text-blue-400 uppercase tracking-widest">Complainant</p>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <FieldRow label="Full Name" value={fir.complainantName} />
+            <FieldRow label="Phone" value={fir.complainantPhone} mono />
           </div>
         </div>
 
-        {/* Incident Details */}
-        <div className="border border-gray-200 rounded-lg p-4 bg-yellow-50">
-          <h3 className="text-sm font-bold text-gray-800 uppercase mb-3 flex items-center gap-2">
-            <AlertCircle size={18} className="text-yellow-600" />
-            Incident Details
-          </h3>
-          <div className="space-y-3">
-            <p className="text-gray-800">
-              <span className="font-semibold">Type:</span> {incidentTypeLabels[fir.incidentType] || fir.incidentType}
-            </p>
-            {fir.involvedWebsite && (
-              <p className="text-gray-800">
-                <span className="font-semibold">Website:</span> <a href={`https://${fir.involvedWebsite}`} target="_blank" className="text-blue-600 hover:underline">{fir.involvedWebsite}</a>
-              </p>
-            )}
-            <div>
-              <p className="font-semibold text-gray-800 mb-2">Description:</p>
-              <div className="bg-white border border-gray-300 rounded p-3 text-gray-700 whitespace-pre-wrap">
-                {fir.incidentDescription}
-              </div>
+        {/* Incident */}
+        <div className="bg-amber-500/8 border border-amber-500/20 rounded-xl p-4 space-y-3">
+          <div className="flex items-center gap-2 mb-1">
+            <AlertCircle className="w-4 h-4 text-amber-400" />
+            <p className="text-xs font-semibold text-amber-400 uppercase tracking-widest">Incident Details</p>
+          </div>
+          <FieldRow label="Type" value={incidentTypeLabels[fir.incidentType] || fir.incidentType} />
+          {fir.involvedWebsite && (
+            <FieldRow
+              label="Involved Website"
+              value={
+                <a href={`https://${fir.involvedWebsite}`} target="_blank" rel="noopener noreferrer"
+                  className="text-blue-400 hover:text-blue-300 transition-colors">
+                  {fir.involvedWebsite}
+                </a>
+              }
+            />
+          )}
+          <div>
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Description</p>
+            <div className="bg-slate-800/60 border border-slate-700/40 rounded-xl px-4 py-3 text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
+              {fir.incidentDescription}
             </div>
           </div>
         </div>
 
         {/* Status */}
-        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 flex items-center gap-3">
-          <Clock size={20} className="text-gray-600" />
+        <div className="flex items-center gap-3 bg-slate-800/50 border border-slate-700/40 rounded-xl px-4 py-3">
+          <Clock className="w-4 h-4 text-slate-500" />
           <div>
-            <p className="text-xs font-semibold text-gray-600 uppercase">Status</p>
-            <p className="text-gray-800 font-semibold capitalize">{fir.status}</p>
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Status</p>
+            <p className="text-sm text-slate-300 font-medium capitalize">{fir.status}</p>
           </div>
         </div>
-      </div>
 
-      {/* Warning Message */}
-      <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-sm">
-        <p className="font-semibold mb-1">⚠️ Important Information</p>
-        <p>
-          Please review all information carefully. Once submitted, this FIR will be recorded in the system and escalated to relevant authorities for investigation.
-        </p>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex gap-4 justify-between">
-        <div className="flex gap-2">
-          <button
-            onClick={handlePrint}
-            disabled={isSubmitting}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:bg-gray-400 text-gray-800 font-semibold rounded-lg transition"
-          >
-            <Printer size={18} />
-            Print
-          </button>
-          <button
-            onClick={handleDownload}
-            disabled={isSubmitting}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:bg-gray-400 text-gray-800 font-semibold rounded-lg transition"
-          >
-            <Download size={18} />
-            Download
-          </button>
+        {/* Warning */}
+        <div className="flex items-start gap-2.5 bg-amber-500/8 border border-amber-500/20 rounded-xl p-4">
+          <span className="text-amber-400 mt-0.5">⚠</span>
+          <p className="text-xs text-amber-300 leading-relaxed">
+            Please review all information carefully. Once submitted, this FIR will be recorded and escalated to relevant authorities for investigation.
+          </p>
         </div>
-        <div className="flex gap-4">
-          <button
-            onClick={onCancel}
-            disabled={isSubmitting}
-            className="px-6 py-2 bg-gray-400 hover:bg-gray-500 disabled:bg-gray-400 text-white font-semibold rounded-lg transition"
-          >
-            Back
-          </button>
-          <button
-            onClick={onFileFIR}
-            disabled={isSubmitting}
-            className="flex items-center gap-2 px-6 py-2 bg-green-500 hover:bg-green-600 disabled:bg-green-400 text-white font-semibold rounded-lg transition"
-          >
-            {isSubmitting ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Filing...
-              </>
-            ) : (
-              <>
-                <CheckCircle size={18} />
-                File FIR
-              </>
-            )}
-          </button>
+
+        {/* Actions */}
+        <div className="flex items-center justify-between pt-1">
+          <div className="flex gap-2">
+            <button onClick={() => window.print()} disabled={isSubmitting}
+              className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-2 rounded-lg transition-colors disabled:opacity-50">
+              <Printer className="w-3.5 h-3.5" /> Print
+            </button>
+            <button onClick={handleDownload} disabled={isSubmitting}
+              className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-2 rounded-lg transition-colors disabled:opacity-50">
+              <Download className="w-3.5 h-3.5" /> Download
+            </button>
+          </div>
+          <div className="flex gap-3">
+            <button onClick={onCancel} disabled={isSubmitting}
+              className="text-sm text-slate-400 hover:text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 px-4 py-2 rounded-xl transition-colors disabled:opacity-50">
+              Back
+            </button>
+            <button onClick={onFileFIR} disabled={isSubmitting}
+              className="flex items-center gap-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-500 px-5 py-2 rounded-xl transition-all hover:shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-0.5 disabled:opacity-60 disabled:translate-y-0">
+              {isSubmitting ? (
+                <><div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" /> Filing…</>
+              ) : (
+                <><CheckCircle className="w-4 h-4" /> File FIR</>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>

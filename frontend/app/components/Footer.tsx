@@ -13,9 +13,9 @@ export default function Footer() {
         <p className="text-slate-500 text-sm">
           © {new Date().getFullYear()} ScanSafe. Built for Indian consumers.
         </p>
-        <div className="flex gap-6 text-sm text-slate-500">
-          <p>Team18</p>
-        </div>
+        <p className="text-slate-500 text-sm">
+          Built with ❤️ by Team18
+        </p>
       </div>
     </footer>
   );
