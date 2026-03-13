@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { ShieldCheck, ArrowRight, Chrome } from "lucide-react";
+import { ShieldCheck, ArrowRight, Chrome, ScanLine } from "lucide-react";
 
 export default function Hero() {
   return (
@@ -35,10 +35,11 @@ export default function Hero() {
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            to="/auth"
+            to="/check"
             className="group flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-8 py-3.5 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5"
           >
-            Sign Up Free
+            <ScanLine className="w-4 h-4" />
+            Check Trust Score
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
           </Link>
           <a

@@ -1,5 +1,5 @@
 import Navbar from "~/components/Navbar";
-import Hero from "~/components/home/App";
+import Hero from "~/components/home/Hero";
 import type { Route } from "./+types/home";
 import Features from "~/components/home/Features";
 import TrustFlow from "~/components/home/TrustFlow";

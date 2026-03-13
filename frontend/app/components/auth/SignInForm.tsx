@@ -1,7 +1,7 @@
 import { useState } from "react";
-
+import { useNavigate } from "react-router";
 import InputField from "~/components/ui/InputField";
-import { useNavigate } from "react-router-dom";
+
 type Form = {
   email: string;
   password: string;
@@ -19,33 +19,57 @@ function validate(email: string, password: string): Errors {
 }
 
 export default function SignInForm() {
-  const Router= useNavigate()
+  const router= useNavigate()
   const [form, setForm] = useState<Form>({ email: "", password: "" });
   const [errors, setErrors] = useState<Errors>({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
+  const navigate = useNavigate();
+
   const handleChange =
     (field: keyof Form) => (e: React.ChangeEvent<HTMLInputElement>) =>
       setForm({ ...form, [field]: e.target.value });
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    <a href="/"></a>
     e.preventDefault();
+    navigate('/dashboard');
 
     // client-side validation first
-    const errs = validate(form.email, form.password);
+    {/*const errs = validate(form.email, form.password);
     if (Object.keys(errs).length) {
       setErrors(errs);
       return;
-    }
+    }*
 
     setErrors({});
     setApiError(null);
     setLoading(true);
+    
+    try {
+      const res = await fetch("http://localhost:3000/api/auth/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
-   
+      const data = await res.json();
+
+      if (!res.ok) {
+        // example: API returns { error: "Invalid credentials" }
+        setApiError(data.error || "Something went wrong");
+        setLoading(false);
+        return;
+      }
+
+      // success
+      setSubmitted(true);
+      setLoading(false);
+    } catch (err) {
+      setApiError("Network error, try again.");
+      setLoading(false);
+    }*/}
   };
 
   if (submitted) {
@@ -99,8 +123,13 @@ export default function SignInForm() {
         type="submit"
         disabled={loading}
         onClick={()=>{
-          Router("/")
+          router("/")
         }}
+      />
+
+      <button
+        type="submit"
+        disabled={loading}
         className={`w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5 mt-1 ${
           loading ? "opacity-60 cursor-not-allowed" : ""
         }`}
