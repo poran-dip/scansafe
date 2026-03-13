@@ -1,5 +1,9 @@
-import Navbar from "~/components/home/Navbar";
+import Navbar from "~/components/Navbar";
+import Hero from "~/components/home/App";
 import type { Route } from "./+types/home";
+import Features from "~/components/home/Features";
+import TrustFlow from "~/components/home/TrustFlow";
+import Footer from "~/components/Footer";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -8,11 +12,16 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export default function Home() {
+export default function Landing() {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center">
+    <div className="min-h-screen bg-slate-950">
       <Navbar />
-      <h1 className="text-7xl tracking-widest">Hello</h1>
+      <main className="pt-16">
+        <Hero />
+        <Features />
+        <TrustFlow />
+      </main>
+      <Footer />
     </div>
   );
 }
