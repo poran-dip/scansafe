@@ -75,7 +75,7 @@ export default function FIRFilingPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen flex flex-col bg-linear-to-br from-blue-50 via-white to-purple-50">
       <Navbar />
       
       <main className="flex-1 py-12">
