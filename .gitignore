@@ -1,0 +1,9 @@
+**/node_modules/
+**/*.env*
+
+.vscode/*
+!.vscode/extensions.json
+.idea/*
+
+Thumbs.db
+.DS_Store
