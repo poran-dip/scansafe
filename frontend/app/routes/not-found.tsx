@@ -1,5 +1,13 @@
 import { Link, useNavigate } from "react-router";
 import { ShieldCheck, Home, LayoutDashboard, ArrowLeft } from "lucide-react";
+import type { Route } from "./+types/not-found";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Page Not Found - ScanSafe" },
+    { name: "description", content: "Sorry, we couldn't find that page." },
+  ];
+}
 
 export default function NotFound() {
   const navigate = useNavigate();

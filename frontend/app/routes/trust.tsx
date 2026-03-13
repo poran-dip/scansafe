@@ -1,13 +1,21 @@
 import { useState } from "react";
-import { Globe, Barcode, Search, ShieldCheck, Loader2 } from "lucide-react";
+import { Globe, Barcode, Search, ShieldCheck } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import BarcodeScanner from "../components/trust/BarcodeScanner";
 import TrustResultPanel from "../components/trust/TrustResultPanel";
 import { verifyInput } from "../services/verifyService";
 import type { TrustResult, InputMode } from "../types/trust";
+import type { Route } from "./+types/trust";
 
 type PageState = "idle" | "loading" | "result";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Check Website/Product - ScanSafe" },
+    { name: "description", content: "Enter a URL or scan a QR code to get the trust score." },
+  ];
+}
 
 export default function TrustScorePage() {
   const [mode, setMode] = useState<InputMode>("url");

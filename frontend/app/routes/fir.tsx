@@ -6,8 +6,16 @@ import VoiceRecorder from "../components/fir/VoiceRecorder";
 import FIRDisplay from "../components/fir/FIRDisplay";
 import { generateFIRFromVoice } from "../services/verifyService";
 import type { FIR } from "../types/trust";
+import type { Route } from "./+types/fir";
 
 type PageState = "input" | "loading" | "preview" | "submitted";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "File & Track FIR - ScanSafe" },
+    { name: "description", content: "File a complaint or FIR and track its status." },
+  ];
+}
 
 export default function FIRFilingPage() {
   const [pageState, setPageState] = useState<PageState>("input");

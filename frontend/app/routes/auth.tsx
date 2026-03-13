@@ -3,6 +3,14 @@ import { Link } from "react-router";
 import { ShieldCheck } from "lucide-react";
 import SignInForm from "~/components/auth/SignInForm";
 import SignUpForm from "~/components/auth/SignUpForm";
+import type { Route } from "./+types/auth";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Sign In / Sign Up - ScanSafe" },
+    { name: "description", content: "Sign in or create an account to use ScanSafe features." },
+  ];
+}
 
 export default function Auth() {
   const [tab, setTab] = useState("signin");

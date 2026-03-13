@@ -7,8 +7,9 @@ import Footer from "~/components/Footer";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Team 18 BIS Hackathon" },
-    { name: "description", content: "Team 18 BIS Hackathon" },
+    { title: "ScanSafe - Verify Products & Websites Instantly" },
+    { name: "description", content: "Check if websites or products are genuine and safe with ScanSafe." },
+    { name: "keywords", content: "ScanSafe, BIS, FSSAI, trust score, safety" },
   ];
 }
 

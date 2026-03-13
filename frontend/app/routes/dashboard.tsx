@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useNavigate, Link } from "react-router";
 import Navbar from "../components/Navbar";
+import type { Route } from "./+types/dashboard";
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -108,6 +109,13 @@ function ScoreBadge({ score, result }: { score: number; result: ScanRow["result"
 }
 
 // ── Page ─────────────────────────────────────────────────────────
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Dashboard - ScanSafe" },
+    { name: "description", content: "Manage your profile and FIR/complaint tracking on ScanSafe." },
+  ];
+}
 
 export default function Dashboard() {
   const navigate = useNavigate();
