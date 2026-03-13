@@ -1,4 +1,4 @@
-import type { TrustResult, InputMode } from "~/types/trust";
+import type { TrustResult, InputMode, FIR } from "~/types/trust";
 
 // Simulates an API call — swap with real fetch() later
 export async function verifyInput(
@@ -137,4 +137,70 @@ export async function verifyInput(
         }
       : {}),
   };
+}
+
+const mockTrustData = [
+  { website: "amazon.com", trustScore: 87, category: "marketplace", reviews: 2847 },
+  { website: "shadydeals.net", trustScore: 23, category: "discount", reviews: 12 },
+  { website: "ebay.com", trustScore: 82, category: "auction", reviews: 5621 },
+  { website: "unknownshoppe.io", trustScore: 34, category: "retail", reviews: 28 },
+  { website: "paypal.com", trustScore: 91, category: "payments", reviews: 8934 },
+  { website: "cheapstuffnow.com", trustScore: 18, category: "discount", reviews: 4 },
+  { website: "walmart.com", trustScore: 79, category: "retail", reviews: 3456 },
+  { website: "cryptomining-offers.biz", trustScore: 12, category: "crypto", reviews: 2 },
+  { website: "bestbuy.com", trustScore: 85, category: "electronics", reviews: 4123 },
+  { website: "microsoftstore.com", trustScore: 93, category: "official", reviews: 6789 }
+];
+
+export async function generateFIRFromVoice(
+  voiceTranscript: string,
+  complainantName: string,
+  complainantPhone: string
+): Promise<FIR> {
+  await new Promise((res) => setTimeout(res, 2000)); // simulate processing
+
+  const transcript = voiceTranscript.toLowerCase();
+  
+  // Determine incident severity and type
+  let severity: "low" | "medium" | "high" | "critical" = "medium";
+  let incidentType = "general_complaint";
+  
+  if (transcript.includes("scam") || transcript.includes("fraud")) {
+    severity = "high";
+    incidentType = "fraud";
+  } else if (transcript.includes("money") || transcript.includes("payment")) {
+    severity = "high";
+    incidentType = "financial_fraud";
+  } else if (transcript.includes("fake") || transcript.includes("counterfeit")) {
+    severity = "critical";
+    incidentType = "counterfeit_product";
+  } else if (transcript.includes("threat") || transcript.includes("harassment")) {
+    severity = "critical";
+    incidentType = "harassment";
+  } else if (transcript.includes("quality") || transcript.includes("defective")) {
+    severity = "low";
+    incidentType = "product_quality";
+  }
+
+  const involvedWebsite = extractWebsite(voiceTranscript);
+
+  return {
+    id: `FIR-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    complainantName,
+    complainantPhone,
+    incidentDescription: voiceTranscript,
+    incidentType,
+    incidentDate: new Date().toISOString().split('T')[0],
+    involvedWebsite: involvedWebsite || undefined,
+    severity,
+    status: "draft",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+function extractWebsite(text: string): string | null {
+  const urlPattern = /(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9-]+\.[a-zA-Z]{2,})/;
+  const match = text.match(urlPattern);
+  return match ? match[0] : null;
 }

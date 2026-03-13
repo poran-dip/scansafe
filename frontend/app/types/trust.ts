@@ -32,3 +32,18 @@ export interface TrustResult {
   alerts: TrustAlert[];
   product?: ProductDetails;
 }
+
+export interface FIR {
+  id: string;
+  complainantName: string;
+  complainantPhone: string;
+  incidentDescription: string;
+  incidentType: string;
+  incidentDate: string;
+  involvedWebsite?: string;
+  relevantDocuments?: string[];
+  severity: "low" | "medium" | "high" | "critical";
+  status: "draft" | "submitted" | "under-review" | "resolved";
+  createdAt: string;
+  updatedAt: string;
+}
