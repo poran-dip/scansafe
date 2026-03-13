@@ -7,8 +7,9 @@ import {
   TrendingUp,
   Clock,
   ExternalLink,
+  FileWarning,
 } from "lucide-react";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -190,6 +191,15 @@ export default function Dashboard() {
                     <ScoreBadge score={row.score} result={row.result} />
                     <ResultPill result={row.result} />
                     <span className="text-xs text-slate-600 hidden sm:block">{row.date}</span>
+                    {(row.result === "unsafe" || row.result === "warning") && (
+                      <Link
+                        to="/fir"
+                        className="hidden sm:flex items-center gap-1 text-xs text-red-400 hover:text-red-300 font-medium transition-colors"
+                      >
+                        <FileWarning className="w-3.5 h-3.5" />
+                        File FIR
+                      </Link>
+                    )}
                   </div>
                 </div>
               ))}
@@ -236,14 +246,13 @@ export default function Dashboard() {
                 </div>
               ))}
 
-              <a
-                href="https://bis.gov.in"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-1 flex items-center justify-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors py-2"
+              <Link
+                to="/fir"
+                className="mt-1 flex items-center justify-center gap-1.5 text-xs font-semibold text-red-400 hover:text-red-300 bg-red-500/8 hover:bg-red-500/12 border border-red-500/20 rounded-xl py-2.5 transition-all"
               >
-                View all BIS/FSSAI notices <ExternalLink className="w-3 h-3" />
-              </a>
+                <FileWarning className="w-3.5 h-3.5" />
+                Submit Complaint / FIR
+              </Link>
             </div>
           </div>
 
